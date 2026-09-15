@@ -1,244 +1,899 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Omni RNG 2D - ¡Infinitos Objetos!</title>
-  <style>
-    :root {
-      --bg-color: #090d16;
-      --card-color: #131c2e;
-      --accent-color: #38bdf8;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cars RNG</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background:
+        radial-gradient(circle at top, #17294d 0%, #07101f 45%, #030711 100%);
+    color: white;
+    min-height: 100vh;
+    padding: 25px;
+}
+
+.container {
+    max-width: 1250px;
+    margin: auto;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.logo {
+    font-size: 52px;
+    font-weight: 900;
+}
+
+.logo span {
+    color: #287cff;
+}
+
+.subtitle {
+    color: #aab9d5;
+    margin-top: 8px;
+}
+
+.main {
+    display: grid;
+    grid-template-columns: 220px 1fr 280px;
+    gap: 20px;
+}
+
+.panel,
+.result,
+.probabilities,
+.collection,
+.history {
+    background: rgba(10, 21, 40, .85);
+    border: 1px solid #28405f;
+    border-radius: 18px;
+    padding: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,.25);
+}
+
+button {
+    border: none;
+    cursor: pointer;
+    color: white;
+    font-weight: bold;
+}
+
+.roll {
+    width: 100%;
+    height: 80px;
+    border-radius: 15px;
+    font-size: 22px;
+    background: linear-gradient(135deg, #168cff, #2364ff);
+    box-shadow: 0 0 25px rgba(30,120,255,.4);
+    transition: .2s;
+}
+
+.roll:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 35px rgba(30,120,255,.7);
+}
+
+.roll:active {
+    transform: scale(.97);
+}
+
+.small-btn {
+    width: 100%;
+    margin-top: 12px;
+    padding: 13px;
+    border-radius: 10px;
+    background: #142640;
+    border: 1px solid #315074;
+}
+
+.result {
+    min-height: 370px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.result::before {
+    content: "";
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background: #247bff;
+    filter: blur(100px);
+    opacity: .12;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.rarity {
+    display: inline-block;
+    padding: 8px 20px;
+    border-radius: 30px;
+    font-weight: bold;
+    margin: 0 auto 12px;
+}
+
+.car-name {
+    font-size: 38px;
+    font-weight: 900;
+    position: relative;
+}
+
+.car-image {
+    height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.car-image svg {
+    width: 300px;
+    max-width: 90%;
+    filter: drop-shadow(0 15px 15px rgba(0,0,0,.5));
+}
+
+.price {
+    color: #ffd34d;
+    font-size: 20px;
+    margin-top: 8px;
+}
+
+.probabilities h2,
+.collection h2,
+.history h2 {
+    margin-bottom: 18px;
+}
+
+.prob {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #20344f;
+}
+
+.dot {
+    width: 13px;
+    height: 13px;
+    display: inline-block;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.common { color: #c4cfdf; }
+.uncommon { color: #22d36f; }
+.rare { color: #2690ff; }
+.epic { color: #a943ff; }
+.legendary { color: #ffc928; }
+
+.dot.common { background:#9ba8ba; }
+.dot.uncommon { background:#16c968; }
+.dot.rare { background:#168cff; }
+.dot.epic { background:#a32cff; }
+.dot.legendary { background:#ffc400; }
+
+.collection {
+    margin-top: 20px;
+}
+
+.cars {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 15px;
+}
+
+.car-card {
+    background: #0d1a2d;
+    border: 1px solid #29415f;
+    border-radius: 14px;
+    padding: 12px;
+    text-align: center;
+    transition: .2s;
+}
+
+.car-card:hover {
+    transform: translateY(-5px);
+    border-color: #438cff;
+}
+
+.car-card svg {
+    width: 100%;
+    height: 75px;
+}
+
+.car-card h3 {
+    font-size: 14px;
+    margin-top: 8px;
+}
+
+.tag {
+    display: inline-block;
+    font-size: 11px;
+    padding: 4px 8px;
+    border-radius: 10px;
+    margin-top: 7px;
+    background: #172943;
+}
+
+.history {
+    margin-top: 20px;
+}
+
+.history-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    border-bottom: 1px solid #20344f;
+}
+
+.stats {
+    margin-top: 15px;
+    color: #aab9d5;
+    line-height: 1.8;
+}
+
+.flash {
+    animation: flash .65s ease;
+}
+
+@keyframes flash {
+    0% {
+        transform: scale(.8);
+        opacity: .2;
+    }
+    60% {
+        transform: scale(1.08);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.legendary-glow {
+    animation: legendary .8s infinite alternate;
+}
+
+@keyframes legendary {
+    from {
+        box-shadow: 0 0 10px #ffc400;
+    }
+    to {
+        box-shadow: 0 0 45px #ffc400;
+    }
+}
+
+@media(max-width: 950px) {
+    .main {
+        grid-template-columns: 1fr;
     }
 
+    .cars {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media(max-width: 500px) {
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: var(--bg-color);
-      color: white;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-      margin: 0;
-      padding: 20px;
+        padding: 12px;
     }
 
-    h1 { margin-bottom: 5px; text-align: center; }
-    .stats-bar { display: flex; gap: 20px; color: #94a3b8; margin-bottom: 15px; }
-
-    /* Carta Principal */
-    .card-container { perspective: 1000px; margin-bottom: 20px; }
-
-    .card {
-      width: 240px;
-      height: 330px;
-      background-color: var(--card-color);
-      border-radius: 16px;
-      border: 4px solid #334155;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-      transition: transform 0.2s, border-color 0.3s, box-shadow 0.3s;
-      text-align: center;
-      padding: 15px;
-      box-sizing: border-box;
+    .logo {
+        font-size: 38px;
     }
 
-    .card.shake { animation: pop 0.25s ease-in-out; }
-
-    @keyframes pop {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.08); }
-      100% { transform: scale(1); }
+    .cars {
+        grid-template-columns: repeat(2, 1fr);
     }
 
-    .card-icon { font-size: 65px; margin-bottom: 10px; }
-    .card-category { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #94a3b8; }
-    .card-title { font-size: 20px; font-weight: bold; margin: 5px 0; }
-    .card-rarity { font-size: 13px; font-weight: bold; }
-
-    /* Botones */
-    .actions { display: flex; gap: 10px; margin-bottom: 25px; }
-
-    button {
-      background-color: var(--accent-color);
-      color: #0f172a;
-      border: none;
-      padding: 14px 24px;
-      font-size: 16px;
-      font-weight: bold;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
+    .car-name {
+        font-size: 28px;
     }
-
-    button:hover { background-color: #7dd3fc; transform: scale(1.05); }
-    button:active { transform: scale(0.98); }
-
-    /* Álbum de Objetos */
-    .album-title { margin-top: 20px; border-bottom: 2px solid #334155; width: 100%; max-width: 600px; text-align: center; padding-bottom: 10px; }
-    .album {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-      gap: 10px;
-      width: 100%;
-      max-width: 600px;
-      margin-top: 15px;
-      max-height: 400px;
-      overflow-y: auto;
-      padding-right: 5px;
-    }
-
-    .album-item {
-      background-color: #131c2e;
-      border-radius: 8px;
-      padding: 8px;
-      text-align: center;
-      font-size: 10px;
-      border: 2px solid #334155;
-      opacity: 0.25;
-      transition: opacity 0.3s;
-    }
-
-    .album-item.unlocked { opacity: 1; }
-  </style>
+}
+</style>
 </head>
+
 <body>
 
-  <h1>🌍 Omni RNG 2D</h1>
-  <div class="stats-bar">
-    <div>Tiradas: <span id="total-rolls">0</span></div>
-  </div>
+<div class="container">
 
-  <!-- Carta Principal -->
-  <div class="card-container">
-    <div class="card" id="main-card">
-      <div class="card-category" id="card-category">RNG General</div>
-      <div class="card-icon" id="card-icon">❓</div>
-      <div class="card-title" id="card-title">Pulsa Tirar</div>
-      <div class="card-rarity" id="card-rarity">1 en 1</div>
+<header>
+    <div class="logo">🚗 COCHES <span>RNG</span></div>
+    <div class="subtitle">
+        Tira y descubre qué coche te toca... ¡Buena suerte!
     </div>
-  </div>
+</header>
 
-  <div class="actions">
-    <button onclick="roll()">🎲 ¡TIRAR OBJETO!</button>
-  </div>
+<div class="main">
 
-  <!-- Álbum / Inventario -->
-  <h2 class="album-title">Enciclopedia de Objetos (<span id="unlocked-count">0</span>/<span id="total-count">0</span>)</h2>
-  <div class="album" id="album"></div>
+    <div class="panel">
+        <button class="roll" onclick="rollCar()">
+            🎲 TIRAR COCHE
+        </button>
 
-  <script>
-    // BASE DE DATOS DE OBJETOS INFINITOS
-    const ITEMS = [
-      // Material de Clase
-      { name: "Lápiz Usado", category: "Escuela", chance: 2, icon: "✏️", color: "#a1a1aa" },
-      { name: "Goma de Borrar", category: "Escuela", chance: 4, icon: "🧹", color: "#a1a1aa" },
-      { name: "Regla Rota", category: "Escuela", chance: 8, icon: "📏", color: "#a1a1aa" },
-      { name: "Cuaderno", category: "Escuela", chance: 15, icon: "📓", color: "#60a5fa" },
-      { name: "Mochila", category: "Escuela", chance: 45, icon: "🎒", color: "#60a5fa" },
-      { name: "Calculadora Científica", category: "Escuela", chance: 120, icon: "📟", color: "#fde047" },
+        <button class="small-btn" onclick="showProbabilities()">
+            📊 Ver probabilidades
+        </button>
 
-      // Cocina
-      { name: "Cuchara", category: "Cocina", chance: 3, icon: "🥄", color: "#a1a1aa" },
-      { name: "Taza Agrietada", category: "Cocina", chance: 6, icon: "☕", color: "#a1a1aa" },
-      { name: "Sartén", category: "Cocina", chance: 25, icon: "🍳", color: "#60a5fa" },
-      { name: "Cuchillo de Chef", category: "Cocina", chance: 80, icon: "🔪", color: "#fde047" },
-      { name: "Microondas", category: "Cocina", chance: 250, icon: "📻", color: "#c084fc" },
-      { name: "Nevera Inteligente", category: "Cocina", chance: 1200, icon: "🧊", color: "#f87171" },
+        <div class="stats">
+            💰 Dinero: <b id="money">0 €</b><br>
+            🎰 Tiradas: <b id="rolls">0</b><br>
+            🏆 Mejor: <b id="best">Ninguno</b>
+        </div>
+    </div>
 
-      // Muebles
-      { name: "Silla de Plástico", category: "Muebles", chance: 5, icon: "🪑", color: "#a1a1aa" },
-      { name: "Mesa de Madera", category: "Muebles", chance: 30, icon: "🪵", color: "#60a5fa" },
-      { name: "Lámpara de Pie", category: "Muebles", chance: 60, icon: "💡", color: "#60a5fa" },
-      { name: "Sofá Cómodo", category: "Muebles", chance: 180, icon: "🛋️", color: "#fde047" },
-      { name: "Cama King Size", category: "Muebles", chance: 500, icon: "🛏️", color: "#c084fc" },
 
-      // Naturaleza y Árboles
-      { name: "Hoja Seca", category: "Naturaleza", chance: 2, icon: "🍂", color: "#a1a1aa" },
-      { name: "Cactus Enano", category: "Naturaleza", chance: 10, icon: "🌵", color: "#a1a1aa" },
-      { name: "Pino Verde", category: "Naturaleza", chance: 100, icon: "🌲", color: "#60a5fa" },
-      { name: "Bonsái Milenario", category: "Naturaleza", chance: 2500, icon: "🪴", color: "#f87171" },
-      { name: "Árbol del Cerezo (Sakura)", category: "Naturaleza", chance: 15000, icon: "🌸", color: "#f472b6" },
+    <div id="result" class="result">
 
-      // Vehículos / Coches
-      { name: "Bicicleta Vieja", category: "Coches", chance: 40, icon: "🚲", color: "#60a5fa" },
-      { name: "Patinete Eléctrico", category: "Coches", chance: 90, icon: "🛴", color: "#60a5fa" },
-      { name: "Coche Utilitario", category: "Coches", chance: 350, icon: "🚗", color: "#fde047" },
-      { name: "Camión de Bomberos", category: "Coches", chance: 1500, icon: "🚒", color: "#c084fc" },
-      { name: "Deportivo de Lujo", category: "Coches", chance: 8000, icon: "🏎️", color: "#f87171" },
-      { name: "Cohete Espacial", category: "Coches", chance: 100000, icon: "🚀", color: "#38bdf8" },
+        <div class="rarity common" id="rarity">
+            ¡LISTO!
+        </div>
 
-      // Míticos / Imposibles (1 en 1 Millón)
-      { name: "El Santo Grial", category: "Mítico", chance: 250000, icon: "🏆", color: "#fbbf24" },
-      { name: "Agujero Negro", category: "Mítico", chance: 1000000, icon: "🕳️", color: "#e879f9" }
-    ];
+        <div class="car-image" id="carImage">
+            🚗
+        </div>
 
-    let totalRolls = parseInt(localStorage.getItem("omni_rolls")) || 0;
-    let unlocked = new Set(JSON.parse(localStorage.getItem("omni_unlocked")) || []);
+        <div class="car-name" id="carName">
+            ¿Qué coche te tocará?
+        </div>
 
-    document.getElementById("total-rolls").innerText = totalRolls;
-    document.getElementById("total-count").innerText = ITEMS.length;
+        <div class="price" id="price">
+            Pulsa TIRAR
+        </div>
 
-    // Crear la cuadrícula de la Enciclopedia
-    const albumEl = document.getElementById("album");
-    ITEMS.forEach((item, index) => {
-      const el = document.createElement("div");
-      el.className = `album-item ${unlocked.has(index) ? 'unlocked' : ''}`;
-      el.id = `album-${index}`;
-      if (unlocked.has(index)) el.style.borderColor = item.color;
-      el.innerHTML = `<div>${item.icon}</div><div><b>${item.name}</b></div><div>1/${item.chance.toLocaleString()}</div>`;
-      albumEl.appendChild(el);
-    });
-    document.getElementById("unlocked-count").innerText = unlocked.size;
+    </div>
 
-    // Tirar RNG
-    function roll() {
-      totalRolls++;
-      document.getElementById("total-rolls").innerText = totalRolls;
 
-      const rand = Math.random();
-      // Ordenar de más raro a más común
-      const sorted = [...ITEMS].sort((a, b) => b.chance - a.chance);
+    <div class="probabilities">
+        <h2>Probabilidades</h2>
 
-      let selected = ITEMS[0];
-      for (let item of sorted) {
-        if (rand < (1 / item.chance)) {
-          selected = item;
-          break;
-        }
-      }
+        <div class="prob">
+            <span><i class="dot common"></i>Común</span>
+            <b>50%</b>
+        </div>
 
-      // Actualizar Interfaz
-      const cardEl = document.getElementById("main-card");
-      cardEl.classList.remove("shake");
-      void cardEl.offsetWidth;
-      cardEl.classList.add("shake");
+        <div class="prob">
+            <span><i class="dot uncommon"></i>Poco común</span>
+            <b>25%</b>
+        </div>
 
-      document.getElementById("card-category").innerText = selected.category;
-      document.getElementById("card-icon").innerText = selected.icon;
-      document.getElementById("card-title").innerText = selected.name;
-      document.getElementById("card-rarity").innerText = `1 en ${selected.chance.toLocaleString()}`;
-      document.getElementById("card-rarity").style.color = selected.color;
-      
-      cardEl.style.borderColor = selected.color;
-      cardEl.style.boxShadow = `0 0 25px ${selected.color}aa`;
+        <div class="prob">
+            <span><i class="dot rare"></i>Raro</span>
+            <b>15%</b>
+        </div>
 
-      // Registrar desbloqueo
-      const index = ITEMS.findIndex(i => i.name === selected.name);
-      if (!unlocked.has(index)) {
-        unlocked.add(index);
-        const albumItem = document.getElementById(`album-${index}`);
-        albumItem.classList.add("unlocked");
-        albumItem.style.borderColor = selected.color;
-        document.getElementById("unlocked-count").innerText = unlocked.size;
-      }
+        <div class="prob">
+            <span><i class="dot epic"></i>Épico</span>
+            <b>7%</b>
+        </div>
 
-      localStorage.setItem("omni_rolls", totalRolls);
-      localStorage.setItem("omni_unlocked", JSON.stringify(Array.from(unlocked)));
-    }
-  </script>
+        <div class="prob">
+            <span><i class="dot legendary"></i>Legendario</span>
+            <b>3%</b>
+        </div>
+    </div>
+
+</div>
+
+
+<div class="collection">
+
+    <h2>🚘 Todos los coches</h2>
+
+    <div class="cars" id="cars"></div>
+
+</div>
+
+
+<div class="history">
+
+    <h2>📜 Últimos resultados</h2>
+
+    <div id="historyList">
+        Todavía no has tirado ningún coche.
+    </div>
+
+</div>
+
+</div>
+
+
+<script>
+
+const cars = [
+
+{
+    name:"Toyota Corolla",
+    rarity:"common",
+    chance:30,
+    value:1000,
+    color:"#d9dce2"
+},
+
+{
+    name:"Volkswagen Golf",
+    rarity:"common",
+    chance:20,
+    value:1500,
+    color:"#e33c3c"
+},
+
+{
+    name:"Ford Focus",
+    rarity:"uncommon",
+    chance:15,
+    value:3000,
+    color:"#cfd4dc"
+},
+
+{
+    name:"Audi A3",
+    rarity:"uncommon",
+    chance:10,
+    value:4500,
+    color:"#df3030"
+},
+
+{
+    name:"Jeep Wrangler",
+    rarity:"uncommon",
+    chance:10,
+    value:5000,
+    color:"#c8a83d"
+},
+
+{
+    name:"Ford Mustang",
+    rarity:"rare",
+    chance:5,
+    value:12000,
+    color:"#1479ff"
+},
+
+{
+    name:"Porsche 911",
+    rarity:"rare",
+    chance:5,
+    value:18000,
+    color:"#171c25"
+},
+
+{
+    name:"Subaru WRX STI",
+    rarity:"rare",
+    chance:5,
+    value:22000,
+    color:"#1269df"
+},
+
+{
+    name:"Lamborghini Huracán",
+    rarity:"epic",
+    chance:2,
+    value:65000,
+    color:"#eeeeee"
+},
+
+{
+    name:"BMW M4",
+    rarity:"epic",
+    chance:2,
+    value:80000,
+    color:"#2680e8"
+},
+
+{
+    name:"Ferrari 488",
+    rarity:"epic",
+    chance:3,
+    value:95000,
+    color:"#e32626"
+},
+
+{
+    name:"Bugatti Chiron",
+    rarity:"legendary",
+    chance:3,
+    value:250000,
+    color:"#252b35"
+}
+
+];
+
+
+const rarityNames = {
+    common:"Común",
+    uncommon:"Poco común",
+    rare:"Raro",
+    epic:"Épico",
+    legendary:"Legendario"
+};
+
+
+let money = Number(localStorage.getItem("money")) || 0;
+let rolls = Number(localStorage.getItem("rolls")) || 0;
+let best = localStorage.getItem("best") || "Ninguno";
+
+document.getElementById("money").textContent =
+    money.toLocaleString("es-ES") + " €";
+
+document.getElementById("rolls").textContent = rolls;
+
+document.getElementById("best").textContent = best;
+
+
+// ===========================
+// DIBUJO DE COCHE
+// ===========================
+
+function carSVG(color) {
+
+return `
+
+<svg viewBox="0 0 400 180">
+
+<ellipse
+    cx="200"
+    cy="145"
+    rx="145"
+    ry="15"
+    fill="rgba(0,0,0,.4)"
+/>
+
+<!-- carrocería -->
+
+<path
+    d="M65 120
+       L90 105
+       L125 58
+       Q140 38 175 35
+       L255 35
+       Q285 38 305 62
+       L335 105
+       L350 115
+       L345 135
+       L55 135
+       Z"
+    fill="${color}"
+/>
+
+<!-- ventanas -->
+
+<path
+    d="M130 61
+       L165 45
+       L235 45
+       L275 62
+       L290 90
+       L112 90
+       Z"
+    fill="#101b2c"
+/>
+
+<line
+    x1="200"
+    y1="45"
+    x2="200"
+    y2="90"
+    stroke="#3d536f"
+    stroke-width="4"
+/>
+
+<!-- ruedas -->
+
+<circle cx="110" cy="135" r="27" fill="#080b10"/>
+<circle cx="110" cy="135" r="12" fill="#7c8798"/>
+
+<circle cx="290" cy="135" r="27" fill="#080b10"/>
+<circle cx="290" cy="135" r="12" fill="#7c8798"/>
+
+<!-- luces -->
+
+<rect
+    x="320"
+    y="105"
+    width="17"
+    height="8"
+    rx="4"
+    fill="#fff"
+/>
+
+<rect
+    x="63"
+    y="105"
+    width="17"
+    height="8"
+    rx="4"
+    fill="#ff3030"
+/>
+
+</svg>
+
+`;
+
+}
+
+
+// ===========================
+// COLECCIÓN
+// ===========================
+
+function renderCars() {
+
+const container = document.getElementById("cars");
+
+container.innerHTML = "";
+
+cars.forEach(car => {
+
+const card = document.createElement("div");
+
+card.className = "car-card";
+
+card.innerHTML = `
+
+${carSVG(car.color)}
+
+<h3>${car.name}</h3>
+
+<div class="tag ${car.rarity}">
+${rarityNames[car.rarity]}
+</div>
+
+<div style="margin-top:5px;color:#ffd34d;font-size:12px">
+${car.value.toLocaleString("es-ES")} €
+</div>
+
+`;
+
+container.appendChild(card);
+
+});
+
+}
+
+renderCars();
+
+
+// ===========================
+// RNG
+// ===========================
+
+function getRandomCar() {
+
+let random = Math.random() * 100;
+
+let accumulated = 0;
+
+for(const car of cars) {
+
+accumulated += car.chance;
+
+if(random <= accumulated) {
+    return car;
+}
+
+}
+
+return cars[0];
+
+}
+
+
+// ===========================
+// TIRADA
+// ===========================
+
+function rollCar() {
+
+const button = document.querySelector(".roll");
+
+button.disabled = true;
+
+let result = document.getElementById("result");
+
+result.classList.remove("flash");
+
+void result.offsetWidth;
+
+result.classList.add("flash");
+
+
+// animación de nombres
+
+let counter = 0;
+
+let animation = setInterval(() => {
+
+const randomCar =
+cars[Math.floor(Math.random() * cars.length)];
+
+document.getElementById("carName").textContent =
+randomCar.name;
+
+document.getElementById("carImage").innerHTML =
+carSVG(randomCar.color);
+
+counter++;
+
+if(counter >= 12) {
+
+clearInterval(animation);
+
+const car = getRandomCar();
+
+showCar(car);
+
+button.disabled = false;
+
+}
+
+}, 80);
+
+}
+
+
+// ===========================
+// MOSTRAR RESULTADO
+// ===========================
+
+function showCar(car) {
+
+const rarity = document.getElementById("rarity");
+
+rarity.textContent =
+rarityNames[car.rarity];
+
+rarity.className =
+"rarity " + car.rarity;
+
+document.getElementById("carName").textContent =
+car.name;
+
+document.getElementById("carImage").innerHTML =
+carSVG(car.color);
+
+document.getElementById("price").textContent =
+"💰 " + car.value.toLocaleString("es-ES") + " €";
+
+
+if(car.rarity === "legendary") {
+
+document.getElementById("result")
+.classList.add("legendary-glow");
+
+} else {
+
+document.getElementById("result")
+.classList.remove("legendary-glow");
+
+}
+
+
+// estadísticas
+
+money += car.value;
+
+rolls++;
+
+
+// mejor coche
+
+const oldBest =
+cars.find(c => c.name === best);
+
+if(!oldBest || car.value > oldBest.value) {
+
+best = car.name;
+
+}
+
+
+// guardar
+
+localStorage.setItem("money", money);
+localStorage.setItem("rolls", rolls);
+localStorage.setItem("best", best);
+
+
+// actualizar
+
+document.getElementById("money").textContent =
+money.toLocaleString("es-ES") + " €";
+
+document.getElementById("rolls").textContent =
+rolls;
+
+document.getElementById("best").textContent =
+best;
+
+
+// historial
+
+addHistory(car);
+
+}
+
+
+// ===========================
+// HISTORIAL
+// ===========================
+
+function addHistory(car) {
+
+const list =
+document.getElementById("historyList");
+
+if(list.textContent.includes("Todavía")) {
+    list.innerHTML = "";
+}
+
+const item =
+document.createElement("div");
+
+item.className = "history-item";
+
+item.innerHTML = `
+
+<span>
+<span class="${car.rarity}">
+${rarityNames[car.rarity]}
+</span>
+&nbsp; ${car.name}
+</span>
+
+<span>
+${car.value.toLocaleString("es-ES")} €
+</span>
+
+`;
+
+list.prepend(item);
+
+while(list.children.length > 10) {
+    list.removeChild(list.lastChild);
+}
+
+}
+
+
+// ===========================
+// PROBABILIDADES
+// ===========================
+
+function showProbabilities() {
+
+alert(
+`🎲 PROBABILIDADES
+
+⚪ Común: 50%
+🟢 Poco común: 25%
+🔵 Raro: 15%
+🟣 Épico: 7%
+🟡 Legendario: 3%
+
+¡Buena suerte! 🚗`
+);
+
+}
+
+</script>
+
 </body>
 </html>
